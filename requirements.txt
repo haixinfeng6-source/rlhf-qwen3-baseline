@@ -1,4 +1,5 @@
 # RLHF 训练依赖包
+# Python 版本要求: 3.8+
 
 # 核心框架
 torch>=2.0.0
@@ -20,3 +21,8 @@ numpy>=1.24.0
 scipy>=1.10.0
 sentencepiece>=0.1.99
 protobuf>=3.20.0
+
+# 注意事项:
+# 1. 如果安装失败，请先更新 pip: pip install --upgrade pip
+# 2. 如果网络问题，使用国内镜像: pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# 3. 如果 Python 版本过低，请升级到 3.8+

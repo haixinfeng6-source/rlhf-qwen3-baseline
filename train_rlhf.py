@@ -145,12 +145,29 @@ class TrainingArguments:
 def load_and_preprocess_dataset(args: TrainingArguments, tokenizer):
     """
     加载并预处理 UltraFeedback 数据集
+    支持从本地路径或 HuggingFace Hub 加载
     UltraFeedback 格式: {instruction, completions: [{response, model, rating}]}
     """
     logger.info(f"加载数据集: {args.dataset_name}")
     
-    # 加载数据集
-    dataset = load_dataset(args.dataset_name, split=args.dataset_split)
+    # 判断是本地路径还是 HuggingFace 数据集名称
+    if os.path.exists(args.dataset_name):
+        # 从本地加载（离线模式）
+        from datasets import load_from_disk
+        logger.info("从本地路径加载数据集（离线模式）")
+        dataset = load_from_disk(args.dataset_name)
+        # 如果是 DatasetDict，获取指定的 split
+        if hasattr(dataset, 'keys'):
+            if args.dataset_split in dataset:
+                dataset = dataset[args.dataset_split]
+            else:
+                # 如果没有指定的 split，使用第一个
+                dataset = dataset[list(dataset.keys())[0]]
+                logger.warning(f"未找到 split '{args.dataset_split}'，使用 '{list(dataset.keys())[0]}'")
+    else:
+        # 从 HuggingFace Hub 加载（在线模式）
+        logger.info("从 HuggingFace Hub 加载数据集（在线模式）")
+        dataset = load_dataset(args.dataset_name, split=args.dataset_split)
     
     if args.max_samples:
         dataset = dataset.select(range(min(args.max_samples, len(dataset))))

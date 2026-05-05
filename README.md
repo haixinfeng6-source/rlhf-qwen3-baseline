@@ -207,7 +207,11 @@ python evaluate_model.py \
 
 ## 🌐 部署到开发机
 
-### 自动部署 (推荐)
+### 在线部署
+
+如果开发机可以联网：
+
+**自动部署 (推荐):**
 
 **Linux:**
 ```bash
@@ -230,7 +234,7 @@ REM 2. 运行部署
 deploy.bat
 ```
 
-### 手动部署
+**手动部署:**
 
 ```bash
 # 1. 上传代码
@@ -247,7 +251,49 @@ pip install -r requirements.txt
 bash run_multi_gpu.sh
 ```
 
-详细步骤请查看 `DEPLOY_TO_SERVER.md`
+### 离线部署（开发机无法联网）
+
+如果开发机无法联网，需要提前下载资源。详细步骤请查看 `OFFLINE_SETUP.md`
+
+**快速流程:**
+
+1. **在有网络的机器上下载资源:**
+```bash
+# 下载模型、数据集和依赖包
+python download_assets.py
+
+# 下载 Python 依赖包
+pip download -r requirements.txt -d offline_assets/wheels
+```
+
+2. **传输到开发机:**
+```bash
+# 压缩
+tar -czf offline_assets.tar.gz offline_assets/
+
+# 传输
+scp offline_assets.tar.gz username@server:/path/to/project/
+```
+
+3. **在开发机上安装:**
+```bash
+# 解压
+tar -xzf offline_assets.tar.gz
+
+# 安装依赖
+bash install_offline.sh
+
+# 测试
+python test_offline_assets.py
+
+# 启动训练
+python train_rlhf.py \
+    --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
+    --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
+    --output_dir=./output_offline
+```
+
+详细步骤请查看 `OFFLINE_SETUP.md`
 
 ## 🐛 常见问题
 
@@ -282,6 +328,7 @@ export NCCL_IB_DISABLE=1
 - `TRAINING_GUIDE.md` - 详细训练指南
 - `LOCAL_SETUP.md` - 本地运行指南
 - `DEPLOY_TO_SERVER.md` - 开发机部署指南
+- `OFFLINE_SETUP.md` - 离线环境部署指南 ⭐
 - `QUICK_REFERENCE.md` - 快速参考卡片
 
 ## 🔗 相关链接
