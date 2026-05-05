@@ -1,5 +1,6 @@
 # RLHF 训练配置文件
-# 可以通过修改此文件来调整训练参数
+# 使用标准 PPO (Proximal Policy Optimization) 方法
+# 基于 HuggingFace TRL 官方实现
 
 # 模型配置
 model:
@@ -11,9 +12,6 @@ dataset:
   name: "openbmb/UltraFeedback"
   split: "train"
   max_samples: null  # null 表示使用全部数据，可设置为数字限制样本数
-
-# 训练方法: ppo 或 grpo
-training_method: "ppo"
 
 # LoRA 配置
 lora:
@@ -56,13 +54,8 @@ training:
 
 # PPO 特定参数
 ppo:
-  epochs: 4
-  mini_batch_size: 1
-
-# GRPO 特定参数
-grpo:
-  num_generations: 4
-  temperature: 0.8
+  epochs: 4  # PPO 内部迭代次数
+  mini_batch_size: 1  # PPO mini-batch 大小
 
 # 分布式训练
 distributed:

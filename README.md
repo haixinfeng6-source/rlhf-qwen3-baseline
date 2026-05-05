@@ -1,303 +1,305 @@
 # RLHF Baseline 训练项目
 
-基于 Qwen3-8B 和 UltraFeedback 数据集的 RLHF (Reinforcement Learning from Human Feedback) 训练代码。
+基于 Qwen 和 UltraFeedback 数据集的 RLHF (Reinforcement Learning from Human Feedback) 训练代码。
 
-## 项目结构
+使用标准 **PPO (Proximal Policy Optimization)** 方法，基于 HuggingFace TRL 官方实现。
+
+## 📁 项目结构
 
 ```
 .
-├── train_rlhf.py              # PPO 训练脚本
-├── train_grpo.py              # GRPO 训练脚本
+├── train_rlhf.py              # RLHF (PPO) 训练脚本
 ├── evaluate_model.py          # 模型评估脚本
-├── run_multi_gpu.sh           # 多卡训练启动脚本 (torchrun)
+├── test_environment.py        # 环境测试脚本
+├── run_multi_gpu.sh           # 多卡训练启动脚本 (Linux)
+├── run_multi_gpu.bat          # 多卡训练启动脚本 (Windows)
 ├── run_accelerate.sh          # Accelerate 启动脚本
-├── accelerate_config.yaml     # Accelerate 配置文件
+├── config.yaml                # 训练配置文件
+├── config_local_test.yaml     # 测试配置文件
 ├── requirements.txt           # Python 依赖
+├── deploy.sh                  # 自动部署脚本 (Linux)
+├── deploy.bat                 # 自动部署脚本 (Windows)
 └── README.md                  # 本文件
 ```
 
-## 环境准备
+## 🎯 RLHF 方法说明
 
-### 1. 安装依赖
+本项目使用 **PPO (Proximal Policy Optimization)** 进行 RLHF 训练。
+
+### 为什么选择 PPO？
+
+- ✅ **业界标准**: ChatGPT, GPT-4, Claude 等都使用此方法
+- ✅ **效果最佳**: 训练稳定，对齐效果好
+- ✅ **理论成熟**: 有大量研究和实践支持
+- ✅ **官方支持**: HuggingFace TRL 官方实现
+
+### 技术架构
+
+```
+RLHF Pipeline:
+1. Policy Model (Actor) - 生成响应
+2. Value Model (Critic) - 评估状态价值
+3. Reward Model - 计算奖励信号
+4. PPO Algorithm - 优化策略
+```
+
+### 参考资料
+
+- [TRL Documentation](https://huggingface.co/docs/trl)
+- [PPO Paper](https://arxiv.org/abs/1707.06347)
+- [InstructGPT Paper](https://arxiv.org/abs/2203.02155)
+- [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF)
+
+## 🚀 快速开始
+
+### 1. 环境准备
 
 ```bash
+# 安装依赖
 pip install -r requirements.txt
+
+# 验证 GPU
+python test_environment.py
 ```
 
-### 2. 验证 GPU 环境
+### 2. 启动训练
 
-```bash
-python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU count: {torch.cuda.device_count()}')"
-```
-
-## 训练方法
-
-### 方法 1: PPO (Proximal Policy Optimization)
-
-PPO 是经典的 RLHF 方法，使用 actor-critic 架构。
-
-**特点:**
-- 需要 value model (额外的显存开销)
-- 训练稳定性好
-- 适合复杂任务
-
-**启动训练:**
-
-```bash
-# 使用 torchrun (推荐)
-bash run_multi_gpu.sh
-
-# 或使用 accelerate
-bash run_accelerate.sh
-```
-
-### 方法 2: GRPO (Group Relative Policy Optimization)
-
-GRPO 是更简单高效的方法，不需要 value model。
-
-**特点:**
-- 显存占用更少
-- 训练速度更快
-- 适合资源受限场景
-
-**启动训练:**
-
-修改脚本中的 `METHOD="grpo"` 然后运行:
-
+**Linux:**
 ```bash
 bash run_multi_gpu.sh
 ```
 
-## 显存优化技巧
-
-### 1. 量化 (Quantization)
-
-**8-bit 量化** (推荐):
-```python
---use_8bit
-```
-- 显存减少约 50%
-- 精度损失很小
-- 训练速度略慢
-
-**4-bit 量化** (极限优化):
-```python
---use_4bit
-```
-- 显存减少约 75%
-- 可能影响精度
-- 适合显存严重不足时
-
-### 2. LoRA (Low-Rank Adaptation)
-
-只训练少量参数，大幅减少显存:
-
-```python
---use_lora \
---lora_r=16 \          # rank 越小显存越少，但表达能力下降
---lora_alpha=32 \
---lora_dropout=0.05
+**Windows:**
+```cmd
+run_multi_gpu.bat
 ```
 
-**LoRA 参数建议:**
-- `lora_r`: 8-64，推荐 16
-- `lora_alpha`: 通常设为 `lora_r * 2`
-- `target_modules`: 选择要训练的层
-
-### 3. Gradient Checkpointing
-
-用计算换显存:
-
-```python
---gradient_checkpointing
+**或直接运行:**
+```bash
+python train_rlhf.py
 ```
 
-- 显存减少 30-50%
-- 训练速度降低 20-30%
-- 几乎无精度损失
+### 3. 自定义配置
 
-### 4. 批次大小优化
+编辑 `config.yaml` 或使用命令行参数：
 
-```python
---per_device_train_batch_size=1 \      # 单卡批次大小
---gradient_accumulation_steps=8        # 梯度累积步数
+```bash
+python train_rlhf.py \
+    --model_name=Qwen/Qwen2.5-7B-Instruct \
+    --dataset_name=openbmb/UltraFeedback \
+    --output_dir=./output \
+    --num_train_epochs=1 \
+    --per_device_train_batch_size=1 \
+    --gradient_accumulation_steps=8 \
+    --learning_rate=1e-5 \
+    --use_lora \
+    --use_8bit \
+    --gradient_checkpointing
 ```
 
-**有效批次大小** = `batch_size × gradient_accumulation_steps × num_gpus`
+## 💾 显存优化
 
-例如: 1 × 8 × 4 = 32
+### 优化策略
 
-### 5. 序列长度控制
+本项目内置多种显存优化技术：
 
-```python
---max_length=512    # 减少序列长度可显著降低显存
+1. **8-bit/4-bit 量化** - 减少 50-75% 显存
+2. **LoRA** - 只训练少量参数
+3. **Gradient Checkpointing** - 用计算换显存
+4. **梯度累积** - 小批次模拟大批次
+
+### 显存占用估算 (Qwen-8B)
+
+| 配置 | 单卡显存 | 4卡总显存 |
+|------|---------|----------|
+| FP16 全参数 | ~16GB | ~64GB |
+| 8bit + LoRA(r=16) | ~8GB | ~32GB |
+| 4bit + LoRA(r=16) | ~6GB | ~24GB |
+| 4bit + LoRA(r=8) | ~5GB | ~20GB |
+
+### 显存不足？
+
+编辑 `config.yaml`:
+
+```yaml
+quantization:
+  use_4bit: true  # 使用 4-bit 量化
+
+lora:
+  r: 8  # 减小 LoRA rank
+
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16  # 增加梯度累积
+  max_length: 256  # 减小序列长度
 ```
 
-### 显存占用估算
-
-以 Qwen3-8B 为例 (4卡训练):
-
-| 配置 | 单卡显存 | 说明 |
-|------|---------|------|
-| 全精度 + 全参数 | ~32GB | 不可行 |
-| FP16 + 全参数 | ~16GB | 勉强可行 |
-| 8bit + LoRA | ~8GB | 推荐 |
-| 4bit + LoRA | ~6GB | 极限优化 |
-
-## 训练参数说明
+## 📊 训练参数说明
 
 ### 核心参数
 
 ```bash
---model_name="Qwen/Qwen2.5-7B-Instruct"    # 模型名称
---dataset_name="openbmb/UltraFeedback"     # 数据集
---output_dir="./output"                     # 输出目录
---num_train_epochs=1                        # 训练轮数
---learning_rate=1e-5                        # 学习率
+--model_name              # 模型名称或路径
+--dataset_name            # 数据集名称
+--output_dir              # 输出目录
+--num_train_epochs        # 训练轮数
+--learning_rate           # 学习率
 ```
 
-### PPO 特定参数
+### PPO 参数
 
 ```bash
---ppo_epochs=4              # PPO 内部迭代次数
---mini_batch_size=1         # PPO mini-batch 大小
+--ppo_epochs              # PPO 内部迭代次数 (默认 4)
+--mini_batch_size         # PPO mini-batch 大小 (默认 1)
 ```
 
-### GRPO 特定参数
+### 优化参数
 
 ```bash
---num_generations=4         # 每个 query 生成的响应数
---temperature=0.8           # 生成温度
+--use_lora                # 启用 LoRA
+--lora_r                  # LoRA rank (默认 16)
+--use_8bit                # 8-bit 量化
+--use_4bit                # 4-bit 量化
+--gradient_checkpointing  # Gradient checkpointing
 ```
 
-## 多卡训练配置
+## 🖥️ 多卡训练
 
 ### 4 卡训练
 
 ```bash
 export CUDA_VISIBLE_DEVICES=0,1,2,3
-NUM_GPUS=4
+bash run_multi_gpu.sh
 ```
 
 ### 8 卡训练
 
 ```bash
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-NUM_GPUS=8
+# 修改 run_multi_gpu.sh 中的 NUM_GPUS=8
+bash run_multi_gpu.sh
 ```
 
-修改 `accelerate_config.yaml` 中的 `num_processes`。
-
-## 模型评估
-
-训练完成后评估模型:
-
-```bash
-python evaluate_model.py \
-    --model_path=./output/final_model \
-    --base_model=Qwen/Qwen2.5-7B-Instruct \  # 如果使用 LoRA
-    --output_file=results.json
-```
-
-## 监控训练
+## 📈 监控训练
 
 ### TensorBoard
 
 ```bash
-tensorboard --logdir=./output/logs
+tensorboard --logdir=./output/logs --port=6006
 ```
 
-### Weights & Biases (可选)
+### 实时 GPU 监控
 
-在代码中设置:
-```python
-log_with="wandb"
+```bash
+watch -n 1 nvidia-smi
 ```
 
-## 常见问题
+## 🎓 模型评估
+
+训练完成后评估模型：
+
+```bash
+python evaluate_model.py \
+    --model_path=./output/final_model \
+    --base_model=Qwen/Qwen2.5-7B-Instruct \
+    --output_file=results.json
+```
+
+## 🌐 部署到开发机
+
+### 自动部署 (推荐)
+
+**Linux:**
+```bash
+# 1. 编辑配置
+vim deploy.sh
+# 修改: SERVER_IP, USERNAME
+
+# 2. 运行部署
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**Windows:**
+```cmd
+REM 1. 编辑配置
+notepad deploy.bat
+REM 修改: SERVER_IP, USERNAME
+
+REM 2. 运行部署
+deploy.bat
+```
+
+### 手动部署
+
+```bash
+# 1. 上传代码
+scp -r . username@server:/path/to/project
+
+# 2. SSH 登录
+ssh username@server
+
+# 3. 安装环境
+cd /path/to/project
+pip install -r requirements.txt
+
+# 4. 启动训练
+bash run_multi_gpu.sh
+```
+
+详细步骤请查看 `DEPLOY_TO_SERVER.md`
+
+## 🐛 常见问题
 
 ### 1. CUDA Out of Memory
 
 **解决方案:**
-- 减小 `batch_size`
-- 增加 `gradient_accumulation_steps`
-- 启用 `gradient_checkpointing`
-- 使用更激进的量化 (4bit)
-- 减小 `max_length`
-- 减小 `lora_r`
+- 使用 4-bit 量化: `--use_4bit`
+- 减小批次大小: `--per_device_train_batch_size=1`
+- 增加梯度累积: `--gradient_accumulation_steps=16`
+- 减小序列长度: `--max_length=256`
 
-### 2. 训练速度慢
+### 2. 数据集下载失败
 
-**优化方案:**
-- 增加 `batch_size` (如果显存允许)
-- 减少 `gradient_accumulation_steps`
-- 关闭 `gradient_checkpointing`
-- 使用更少的 `ppo_epochs`
-
-### 3. 模型效果不好
-
-**改进方向:**
-- 增加训练数据量
-- 调整学习率
-- 增加训练轮数
-- 使用更大的 LoRA rank
-- 改进 reward model
-
-### 4. 分布式训练失败
-
-**检查项:**
-- 确认所有 GPU 可见: `nvidia-smi`
-- 检查端口是否被占用
-- 确认 NCCL 环境变量设置正确
-- 查看错误日志
-
-## 性能优化建议
-
-### 训练速度优化
-
-1. **使用 Flash Attention** (如果支持):
-```python
-model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    attn_implementation="flash_attention_2"
-)
+**解决方案:**
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
 ```
 
-2. **混合精度训练**:
-```python
-fp16=True  # 或 bf16=True (如果 GPU 支持)
+### 3. 多卡训练失败
+
+**解决方案:**
+```bash
+export NCCL_DEBUG=INFO
+export NCCL_IB_DISABLE=1
 ```
 
-3. **数据加载优化**:
-```python
-dataloader_num_workers=4
-dataloader_pin_memory=True
-```
+更多问题请查看 `TRAINING_GUIDE.md`
 
-### 显存优化优先级
+## 📚 文档
 
-1. 启用 8-bit 量化
-2. 使用 LoRA
-3. 启用 gradient checkpointing
-4. 减小 batch size，增加梯度累积
-5. 减小序列长度
-6. 考虑 4-bit 量化
+- `README.md` - 项目概述 (本文件)
+- `TRAINING_GUIDE.md` - 详细训练指南
+- `LOCAL_SETUP.md` - 本地运行指南
+- `DEPLOY_TO_SERVER.md` - 开发机部署指南
+- `QUICK_REFERENCE.md` - 快速参考卡片
 
-## 下一步
+## 🔗 相关链接
 
-1. **改进 Reward Model**: 当前使用简单的长度奖励，应训练专门的 reward model
-2. **数据增强**: 使用更多高质量数据
-3. **超参数调优**: 使用 wandb sweep 等工具
-4. **模型融合**: 尝试多个 checkpoint 的融合
-5. **在线评估**: 部署模型进行人工评估
+- GitHub: https://github.com/haixinfeng6-source/rlhf-qwen3-baseline
+- HuggingFace TRL: https://github.com/huggingface/trl
+- Qwen: https://github.com/QwenLM/Qwen
+- UltraFeedback: https://huggingface.co/datasets/openbmb/UltraFeedback
 
-## 参考资料
-
-- [TRL Documentation](https://huggingface.co/docs/trl)
-- [PEFT Documentation](https://huggingface.co/docs/peft)
-- [Qwen Documentation](https://github.com/QwenLM/Qwen)
-- [UltraFeedback Dataset](https://huggingface.co/datasets/openbmb/UltraFeedback)
-
-## License
+## 📄 License
 
 MIT
+
+## 🙏 致谢
+
+本项目基于以下开源项目：
+
+- [HuggingFace TRL](https://github.com/huggingface/trl)
+- [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF)
+- [Qwen](https://github.com/QwenLM/Qwen)
+- [UltraFeedback](https://huggingface.co/datasets/openbmb/UltraFeedback)

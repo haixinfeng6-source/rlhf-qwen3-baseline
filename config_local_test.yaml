@@ -1,5 +1,6 @@
 # 本地测试配置 - 使用小数据集快速验证
 # 适合在本地机器上测试代码是否能运行
+# 使用标准 RLHF (PPO) 方法
 
 model:
   name: "Qwen/Qwen2.5-7B-Instruct"
@@ -9,8 +10,6 @@ dataset:
   name: "openbmb/UltraFeedback"
   split: "train"
   max_samples: 50  # 只使用 50 条数据快速测试
-
-training_method: "ppo"
 
 lora:
   enabled: true
@@ -45,10 +44,6 @@ training:
 ppo:
   epochs: 2  # 减少 PPO epochs
   mini_batch_size: 1
-
-grpo:
-  num_generations: 2
-  temperature: 0.8
 
 distributed:
   num_gpus: 1  # 单卡测试
