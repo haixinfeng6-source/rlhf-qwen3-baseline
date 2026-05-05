@@ -86,9 +86,14 @@ def download_dependencies(save_dir: str = "./wheels"):
     
     os.makedirs(save_dir, exist_ok=True)
     
-    # 读取 requirements.txt
-    with open("requirements.txt", "r") as f:
-        requirements = f.read()
+    # 读取 requirements.txt (使用 UTF-8 编码)
+    try:
+        with open("requirements.txt", "r", encoding="utf-8") as f:
+            requirements = f.read()
+    except UnicodeDecodeError:
+        # 如果 UTF-8 失败，尝试其他编码
+        with open("requirements.txt", "r", encoding="gbk") as f:
+            requirements = f.read()
     
     print("执行命令:")
     cmd = f"pip download -r requirements.txt -d {save_dir}"
