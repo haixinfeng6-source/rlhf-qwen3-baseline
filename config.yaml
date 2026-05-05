@@ -1,0 +1,74 @@
+# RLHF 训练配置文件
+# 可以通过修改此文件来调整训练参数
+
+# 模型配置
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  trust_remote_code: true
+
+# 数据集配置
+dataset:
+  name: "openbmb/UltraFeedback"
+  split: "train"
+  max_samples: null  # null 表示使用全部数据，可设置为数字限制样本数
+
+# 训练方法: ppo 或 grpo
+training_method: "ppo"
+
+# LoRA 配置
+lora:
+  enabled: true
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "v_proj"
+    - "k_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# 量化配置
+quantization:
+  use_8bit: true
+  use_4bit: false
+
+# 训练超参数
+training:
+  output_dir: "./output"
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-5
+  max_grad_norm: 1.0
+  warmup_steps: 100
+  logging_steps: 10
+  save_steps: 500
+  save_total_limit: 3
+  max_length: 512
+  
+  # 显存优化
+  gradient_checkpointing: true
+  fp16: true
+  bf16: false
+
+# PPO 特定参数
+ppo:
+  epochs: 4
+  mini_batch_size: 1
+
+# GRPO 特定参数
+grpo:
+  num_generations: 4
+  temperature: 0.8
+
+# 分布式训练
+distributed:
+  num_gpus: 4
+  master_port: 29500
+
+# 其他
+seed: 42
+log_with: "tensorboard"  # tensorboard 或 wandb

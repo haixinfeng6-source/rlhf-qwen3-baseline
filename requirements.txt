@@ -1,0 +1,22 @@
+# RLHF 训练依赖包
+
+# 核心框架
+torch>=2.0.0
+transformers>=4.36.0
+datasets>=2.14.0
+accelerate>=0.25.0
+peft>=0.7.0
+trl>=0.7.0
+
+# 量化支持
+bitsandbytes>=0.41.0
+
+# 训练工具
+tensorboard>=2.14.0
+wandb>=0.15.0  # 可选，用于实验跟踪
+
+# 其他依赖
+numpy>=1.24.0
+scipy>=1.10.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
