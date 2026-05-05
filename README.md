@@ -251,49 +251,67 @@ pip install -r requirements.txt
 bash run_multi_gpu.sh
 ```
 
-### 离线部署（开发机无法联网）
+### 离线部署（开发机无法联网）⭐
 
-如果开发机无法联网，需要提前下载资源。详细步骤请查看 `OFFLINE_SETUP.md`
+如果开发机无法联网，需要提前下载资源。
 
-**快速流程:**
+**📖 完整文档:** 
+- `离线运行指南.md` - 快速上手指南 ⭐ 推荐
+- `OFFLINE_SETUP.md` - 详细部署步骤
+- `资源清单.md` - 资源完整性检查
+
+**🚀 快速开始:**
+
+**场景 1: 在当前机器（已下载资源）上运行**
+```bash
+# 1. 安装依赖
+bash install_offline.sh
+
+# 2. 开始训练
+bash run_offline.sh              # 单卡
+bash run_offline_multi_gpu.sh    # 多卡
+```
+
+**场景 2: 传输到无网络开发机运行**
 
 1. **在有网络的机器上下载资源:**
 ```bash
-# 下载模型、数据集和依赖包
+# 一键下载所有资源（模型 + 数据集 + 依赖包）
 python download_assets.py
-
-# 下载 Python 依赖包
 pip download -r requirements.txt -d offline_assets/wheels
 ```
 
 2. **传输到开发机:**
 ```bash
-# 压缩
-tar -czf offline_assets.tar.gz offline_assets/
+# 方式 A: 直接传输（推荐）
+rsync -avz --progress offline_assets/ username@server:/path/to/project/offline_assets/
 
-# 传输
+# 方式 B: 压缩后传输
+tar -czf offline_assets.tar.gz offline_assets/
 scp offline_assets.tar.gz username@server:/path/to/project/
+
+# 方式 C: 使用移动硬盘物理传输
 ```
 
-3. **在开发机上安装:**
+3. **在开发机上运行:**
 ```bash
-# 解压
-tar -xzf offline_assets.tar.gz
-
 # 安装依赖
 bash install_offline.sh
 
-# 测试
+# 验证资源
 python test_offline_assets.py
 
-# 启动训练
-python train_rlhf.py \
-    --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
-    --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
-    --output_dir=./output_offline
+# 开始训练
+bash run_offline.sh              # 单卡
+bash run_offline_multi_gpu.sh    # 多卡
 ```
 
-详细步骤请查看 `OFFLINE_SETUP.md`
+**📊 资源大小:** 总计 15.39 GB
+- 模型: 14.2 GB
+- 数据集: 0.79 GB  
+- 依赖包: 0.41 GB
+
+详细步骤请查看 `离线运行指南.md` 或 `OFFLINE_SETUP.md`
 
 ## 🐛 常见问题
 
@@ -325,10 +343,12 @@ export NCCL_IB_DISABLE=1
 ## 📚 文档
 
 - `README.md` - 项目概述 (本文件)
+- `离线运行指南.md` - 离线运行快速指南 ⭐ 推荐
+- `资源清单.md` - 离线资源完整性检查
+- `OFFLINE_SETUP.md` - 离线环境详细部署
 - `TRAINING_GUIDE.md` - 详细训练指南
 - `LOCAL_SETUP.md` - 本地运行指南
 - `DEPLOY_TO_SERVER.md` - 开发机部署指南
-- `OFFLINE_SETUP.md` - 离线环境部署指南 ⭐
 - `QUICK_REFERENCE.md` - 快速参考卡片
 
 ## 🔗 相关链接
