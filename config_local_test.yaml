@@ -1,0 +1,57 @@
+# 本地测试配置 - 使用小数据集快速验证
+# 适合在本地机器上测试代码是否能运行
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  trust_remote_code: true
+
+dataset:
+  name: "openbmb/UltraFeedback"
+  split: "train"
+  max_samples: 50  # 只使用 50 条数据快速测试
+
+training_method: "ppo"
+
+lora:
+  enabled: true
+  r: 8  # 减小 rank 节省显存
+  alpha: 16
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "v_proj"
+
+quantization:
+  use_8bit: true  # 如果显存不足，改为 use_4bit: true
+  use_4bit: false
+
+training:
+  output_dir: "./output_local_test"
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4  # 减少梯度累积步数
+  learning_rate: 1.0e-5
+  max_grad_norm: 1.0
+  warmup_steps: 10  # 减少 warmup 步数
+  logging_steps: 1  # 每步都记录日志
+  save_steps: 20  # 更频繁地保存
+  save_total_limit: 2
+  max_length: 256  # 减小序列长度节省显存
+  
+  gradient_checkpointing: true
+  fp16: true
+  bf16: false
+
+ppo:
+  epochs: 2  # 减少 PPO epochs
+  mini_batch_size: 1
+
+grpo:
+  num_generations: 2
+  temperature: 0.8
+
+distributed:
+  num_gpus: 1  # 单卡测试
+
+seed: 42
+log_with: "tensorboard"
