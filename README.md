@@ -85,7 +85,7 @@ python train_rlhf.py
 
 ```bash
 python train_rlhf.py \
-    --model_name=Qwen/Qwen2.5-7B-Instruct \
+    --model_name=Qwen/Qwen3-8B \
     --dataset_name=openbmb/UltraFeedback \
     --output_dir=./output \
     --num_train_epochs=1 \
@@ -201,7 +201,7 @@ watch -n 1 nvidia-smi
 ```bash
 python evaluate_model.py \
     --model_path=./output/final_model \
-    --base_model=Qwen/Qwen2.5-7B-Instruct \
+    --base_model=Qwen/Qwen3-8B \
     --output_file=results.json
 ```
 

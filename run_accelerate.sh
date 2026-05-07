@@ -7,7 +7,7 @@
 ACCELERATE_CONFIG="accelerate_config.yaml"
 
 # 模型和数据集
-MODEL_NAME="Qwen/Qwen2.5-7B-Instruct"
+MODEL_NAME="Qwen/Qwen3-8B"
 DATASET_NAME="openbmb/UltraFeedback"
 OUTPUT_DIR="./output_rlhf_accelerate_$(date +%Y%m%d_%H%M%S)"
 

@@ -14,7 +14,7 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 NUM_GPUS=4  # 根据实际情况修改
 
 # 模型和数据集配置
-MODEL_NAME="Qwen/Qwen2.5-7B-Instruct"
+MODEL_NAME="Qwen/Qwen3-8B"
 DATASET_NAME="openbmb/UltraFeedback"
 OUTPUT_DIR="./output_rlhf_$(date +%Y%m%d_%H%M%S)"
 

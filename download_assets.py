@@ -15,7 +15,7 @@ def download_model(model_name: str, save_dir: str = "./models"):
     下载模型到本地
     
     Args:
-        model_name: 模型名称，如 "Qwen/Qwen2.5-7B-Instruct"
+        model_name: 模型名称，如 "Qwen/Qwen3-8B"
         save_dir: 保存目录
     """
     print(f"=" * 60)
@@ -189,7 +189,7 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen2.5-7B-Instruct",
+        default="Qwen/Qwen3-8B",
         help="模型名称"
     )
     parser.add_argument(

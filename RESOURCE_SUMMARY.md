@@ -3,7 +3,7 @@
 ## 📦 已下载资源清单
 
 ### 1. 模型文件
-- **模型名称**: Qwen/Qwen2.5-7B-Instruct
+- **模型名称**: Qwen/Qwen3-8B
 - **保存路径**: `./offline_assets/models/Qwen--Qwen2.5-7B-Instruct`
 - **文件大小**: ~15GB
 - **文件列表**:

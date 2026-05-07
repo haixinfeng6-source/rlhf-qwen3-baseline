@@ -41,7 +41,7 @@ python download_assets.py
 
 # 或指定模型和数据集
 python download_assets.py \
-    --model=Qwen/Qwen2.5-7B-Instruct \
+    --model=Qwen/Qwen3-8B \
     --dataset=openbmb/UltraFeedback
 
 # 只下载模型
@@ -59,7 +59,7 @@ python download_assets.py --skip-model
 # download_model.py
 from huggingface_hub import snapshot_download
 
-model_name = "Qwen/Qwen2.5-7B-Instruct"
+model_name = "Qwen/Qwen3-8B"
 save_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
 
 snapshot_download(

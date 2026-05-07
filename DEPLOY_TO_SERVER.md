@@ -271,7 +271,7 @@ torchrun \
     --nproc_per_node=4 \
     --master_port=29500 \
     train_rlhf.py \
-    --model_name=Qwen/Qwen2.5-7B-Instruct \
+    --model_name=Qwen/Qwen3-8B \
     --dataset_name=openbmb/UltraFeedback \
     --output_dir=./output \
     --use_lora \

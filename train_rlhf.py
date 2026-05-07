@@ -31,7 +31,7 @@ class TrainingArguments:
     
     # 模型配置
     model_name: str = field(
-        default="Qwen/Qwen2.5-7B-Instruct",
+        default="Qwen/Qwen3-8B",
         metadata={"help": "预训练模型名称或路径"}
     )
     

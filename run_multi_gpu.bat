@@ -15,7 +15,7 @@ REM GPU 数量
 set NUM_GPUS=4
 
 REM 模型和数据集配置
-set MODEL_NAME=Qwen/Qwen2.5-7B-Instruct
+set MODEL_NAME=Qwen/Qwen3-8B
 set DATASET_NAME=openbmb/UltraFeedback
 set OUTPUT_DIR=./output_rlhf_%date:~0,4%%date:~5,2%%date:~8,2%_%time:~0,2%%time:~3,2%%time:~6,2%
 

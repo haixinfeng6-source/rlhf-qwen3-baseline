@@ -4,7 +4,7 @@
 
 # 模型配置
 model:
-  name: "Qwen/Qwen2.5-7B-Instruct"
+  name: "Qwen/Qwen3-8B"
   trust_remote_code: true
 
 # 数据集配置

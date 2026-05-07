@@ -1,8 +1,8 @@
-# ÀëÏßÑµÁ·ÅäÖÃ
-# ÊÊÓÃÓÚÎŞÍøÂç¼¯Èº
+# ç¦»çº¿è®­ç»ƒé…ç½®
+# é€‚ç”¨äºæ— ç½‘ç»œé›†ç¾¤
 
 model:
-  name: "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+  name: "./offline_assets/models/Qwen--Qwen3-8B"
   trust_remote_code: true
 
 dataset:
