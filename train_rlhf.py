@@ -5,6 +5,7 @@ RLHF Training Script for Qwen using TRL
 """
 
 import os
+import sys
 import torch
 from dataclasses import dataclass, field
 from typing import Optional
@@ -326,6 +327,16 @@ def setup_model_and_tokenizer(args: TrainingArguments):
 def main():
     """主训练函数"""
     
+    # 多进程初始化检查
+    local_rank = int(os.environ.get("LOCAL_RANK", -1))
+    world_size = int(os.environ.get("WORLD_SIZE", 1))
+    
+    if local_rank != -1:
+        # 多进程环境
+        print(f"[进程 {local_rank}/{world_size-1}] 初始化...")
+        torch.cuda.set_device(local_rank)
+        torch.distributed.init_process_group(backend="nccl")
+    
     # 解析参数
     from transformers import HfArgumentParser
     parser = HfArgumentParser(TrainingArguments)
@@ -334,14 +345,21 @@ def main():
     # 设置随机种子
     torch.manual_seed(args.seed)
     
-    # 创建输出目录
-    os.makedirs(args.output_dir, exist_ok=True)
+    # 只在主进程（rank 0）创建输出目录
+    if local_rank in [-1, 0]:
+        os.makedirs(args.output_dir, exist_ok=True)
     
     # 加载模型和 tokenizer
     model, tokenizer = setup_model_and_tokenizer(args)
     
-    # 加载数据集
-    dataset = load_and_preprocess_dataset(args, tokenizer)
+    # 加载数据集（所有进程都需要）
+    try:
+        dataset = load_and_preprocess_dataset(args, tokenizer)
+    except Exception as e:
+        logger.error(f"加载数据集失败: {e}")
+        if local_rank != -1:
+            torch.distributed.destroy_process_group()
+        raise
     
     # PPO 配置
     ppo_config = PPOConfig(
@@ -358,12 +376,18 @@ def main():
     )
     
     # 创建 PPO Trainer
-    ppo_trainer = PPOTrainer(
-        config=ppo_config,
-        model=model,
-        tokenizer=tokenizer,
-        dataset=dataset,
-    )
+    try:
+        ppo_trainer = PPOTrainer(
+            config=ppo_config,
+            model=model,
+            tokenizer=tokenizer,
+            dataset=dataset,
+        )
+    except Exception as e:
+        logger.error(f"创建 PPO Trainer 失败: {e}")
+        if local_rank != -1:
+            torch.distributed.destroy_process_group()
+        raise
     
     # 创建奖励函数
     reward_fn = create_reward_function()
@@ -427,7 +451,26 @@ def main():
     logger.info("=" * 60)
     logger.info(f"训练完成！模型已保存到 {final_save_path}")
     logger.info("=" * 60)
+    
+    # 清理多进程环境
+    if local_rank != -1:
+        torch.distributed.destroy_process_group()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.error(f"训练失败: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # 确保多进程环境被清理
+        local_rank = int(os.environ.get("LOCAL_RANK", -1))
+        if local_rank != -1:
+            try:
+                torch.distributed.destroy_process_group()
+            except:
+                pass
+        
+        sys.exit(1)

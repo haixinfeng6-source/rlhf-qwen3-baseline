@@ -5,8 +5,16 @@
 ## 🚀 快速开始
 
 ### 1. 环境准备
+
+**Python 版本要求: 3.8-3.11** (推荐 3.10)
+> 注意: Python 3.12+ 可能有不兼容问题，建议使用 3.10 或 3.11
+
 ```bash
+# 安装依赖
 pip install -r requirements.txt
+
+# 如果网络问题，使用国内镜像
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 2. 启动训练
@@ -72,7 +80,15 @@ bash run_offline.sh
 
 ## 🐛 常见问题
 
-### 1. CUDA Out of Memory
+### 1. Python 版本问题
+```bash
+# 如果使用 Python 3.12+ 遇到导入错误
+# 建议降级到 Python 3.10 或 3.11
+conda create -n rlhf python=3.10
+conda activate rlhf
+```
+
+### 2. CUDA Out of Memory
 ```bash
 # 使用 4-bit 量化
 python train_rlhf.py --use_4bit
@@ -81,15 +97,28 @@ python train_rlhf.py --use_4bit
 python train_rlhf.py --per_device_train_batch_size=1 --gradient_accumulation_steps=16
 ```
 
-### 2. 数据集下载失败
+### 3. 数据集下载失败
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
 ```
 
-### 3. 多卡训练失败
+### 4. 多卡训练失败
 ```bash
 export NCCL_DEBUG=INFO
 export NCCL_IB_DISABLE=1
+
+# 如果所有进程都立即失败，尝试单进程测试
+python train_rlhf.py --max_samples=10  # 测试小样本
+```
+
+### 5. TRL 导入错误
+```bash
+# 确保 TRL 版本 >= 0.11.0
+pip install trl>=0.11.0 rich>=14.0.0
+
+# 如果仍有导入错误，检查导入语句
+# 正确: from trl.models import AutoModelForCausalLMWithValueHead
+# 错误: from trl import AutoModelForCausalLMWithValueHead
 ```
 
 ## 📄 License
