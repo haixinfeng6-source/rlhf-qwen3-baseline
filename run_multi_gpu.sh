@@ -36,6 +36,14 @@ echo "Dataset: ${DATASET_NAME}"
 echo "Output: ${OUTPUT_DIR}"
 echo "=========================================="
 
+# 检查环境
+echo "检查环境..."
+python -c "import torch; print(f'PyTorch版本: {torch.__version__}'); print(f'CUDA可用: {torch.cuda.is_available()}'); print(f'GPU数量: {torch.cuda.device_count()}')"
+
+# 检查 TRL 版本
+echo "检查 TRL 版本..."
+python -c "import importlib.metadata; trl_version = importlib.metadata.version('trl'); print(f'TRL版本: {trl_version}')" || echo "警告: 无法获取 TRL 版本"
+
 # 使用 torchrun 启动多卡训练
 torchrun \
     --nproc_per_node=${NUM_GPUS} \

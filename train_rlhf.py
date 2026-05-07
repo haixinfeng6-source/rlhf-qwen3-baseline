@@ -15,7 +15,23 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, TaskType
-from trl.models import AutoModelForCausalLMWithValueHead
+# TRL 导入兼容性处理
+try:
+    # TRL 0.11.0+ 版本
+    from trl.models import AutoModelForCausalLMWithValueHead
+    print("✓ 使用 TRL 0.11.0+ 导入方式: from trl.models import AutoModelForCausalLMWithValueHead")
+except ImportError:
+    try:
+        # TRL 0.10.0 或更早版本
+        from trl import AutoModelForCausalLMWithValueHead
+        print("✓ 使用 TRL 0.10.0 导入方式: from trl import AutoModelForCausalLMWithValueHead")
+    except ImportError as e:
+        print("✗ 无法导入 AutoModelForCausalLMWithValueHead")
+        print(f"错误: {e}")
+        print("请检查 TRL 版本: pip show trl")
+        print("建议安装 TRL >= 0.11.0: pip install trl>=0.11.0")
+        sys.exit(1)
+
 from trl import PPOConfig, PPOTrainer
 from datasets import load_dataset
 import logging
