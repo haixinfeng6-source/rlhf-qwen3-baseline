@@ -7,7 +7,7 @@ transformers>=4.36.0
 datasets>=2.14.0
 accelerate>=0.25.0
 peft>=0.7.0
-trl>=0.7.0
+trl>=0.11.0  # 需要 0.11+ 支持新的导入结构
 
 # 量化支持
 bitsandbytes>=0.41.0
@@ -15,6 +15,7 @@ bitsandbytes>=0.41.0
 # 训练工具
 tensorboard>=2.14.0
 wandb>=0.15.0  # 可选，用于实验跟踪
+rich>=14.0.0  # TRL 0.11+ 需要
 
 # 其他依赖
 numpy>=1.24.0

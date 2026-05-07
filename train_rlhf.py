@@ -14,7 +14,8 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, TaskType
-from trl import AutoModelForCausalLMWithValueHead, PPOConfig, PPOTrainer
+from trl.models import AutoModelForCausalLMWithValueHead
+from trl import PPOConfig, PPOTrainer
 from datasets import load_dataset
 import logging
 
