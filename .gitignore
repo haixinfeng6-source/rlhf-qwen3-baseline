@@ -72,3 +72,5 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+# Offline assets (不要上传到 GitHub)
+offline_assets/
