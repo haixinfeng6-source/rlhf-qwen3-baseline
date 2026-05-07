@@ -1,0 +1,33 @@
+# RLHF 训练专用依赖
+# 这些版本是经过测试的兼容版本
+# 避免与 xtuner、lmdeploy 等包冲突
+
+# 核心框架
+torch==2.1.0
+transformers==4.36.0
+trl==0.11.0
+peft==0.7.0
+datasets==2.14.0
+accelerate==0.25.0
+
+# 量化支持
+bitsandbytes==0.41.0
+
+# 训练工具
+tensorboard==2.14.0
+rich==13.7.0
+
+# 其他依赖
+sentencepiece==0.1.99
+protobuf==3.20.0
+numpy==1.24.0
+scipy==1.10.0
+
+# 安装说明:
+# 1. 创建虚拟环境: python3.10 -m venv venv_rlhf
+# 2. 激活环境: source venv_rlhf/bin/activate
+# 3. 安装: pip install -r requirements_rlhf_only.txt
+# 4. 如果使用 conda: conda create -n rlhf python=3.10
+
+# 注意: 由于 CUDA 驱动可能太旧，使用 CPU 版本:
+# pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu

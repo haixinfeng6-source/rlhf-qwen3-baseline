@@ -1,0 +1,34 @@
+# RLHF 集群环境依赖
+# 固定版本，避免兼容性问题
+
+# PyTorch (根据CUDA版本选择)
+# torch==2.1.0+cu118  # CUDA 11.8
+# torch==2.1.0+cu121  # CUDA 12.1
+torch==2.1.0
+
+# HuggingFace 核心库
+transformers==4.36.0
+datasets==2.14.0
+accelerate==0.25.0
+
+# RLHF 训练
+trl==0.11.0  # 稳定版本，避免1.x的API变化
+
+# 参数高效微调
+peft==0.7.0
+
+# 量化 (可选)
+bitsandbytes==0.41.0
+
+# 工具包
+rich>=13.0.0
+tensorboard>=2.14.0
+tqdm>=4.65.0
+
+# 数据处理
+numpy>=1.24.0
+pandas>=2.0.0
+
+# 其他
+safetensors>=0.4.0
+huggingface-hub>=0.20.0
