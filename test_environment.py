@@ -1,8 +1,10 @@
 """
 环境测试脚本 - 在训练前验证环境配置
+支持离线模式
 """
 
 import sys
+import os
 import subprocess
 
 
@@ -122,7 +124,14 @@ def check_network():
     except:
         print("⚠ Warning: Cannot access HuggingFace")
         print("  You may need to set HF_ENDPOINT or use proxy")
-        return False
+        
+        # 检查是否有离线资源
+        if os.path.exists("./offline_assets"):
+            print("  ✓ Offline assets detected, can run in offline mode")
+            return True  # 离线模式下允许网络检查失败
+        else:
+            print("  ❌ No offline assets found")
+            return False
 
 
 def test_simple_training():
@@ -135,24 +144,53 @@ def test_simple_training():
         import torch
         from transformers import AutoTokenizer, AutoModelForCausalLM
         
-        print("Loading tokenizer...")
-        tokenizer = AutoTokenizer.from_pretrained("gpt2")
+        # 检查是否有离线资源
+        offline_model_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
         
-        print("Loading model...")
-        model = AutoModelForCausalLM.from_pretrained(
-            "gpt2",
-            torch_dtype=torch.float16,
-            device_map="auto"
-        )
-        
-        print("Testing generation...")
-        inputs = tokenizer("Hello", return_tensors="pt").to(model.device)
-        outputs = model.generate(**inputs, max_length=20)
-        result = tokenizer.decode(outputs[0])
-        
-        print(f"Generated: {result}")
-        print("✓ Training flow test OK")
-        return True
+        if os.path.exists(offline_model_path):
+            print("Using offline model for testing...")
+            print(f"Loading tokenizer from: {offline_model_path}")
+            tokenizer = AutoTokenizer.from_pretrained(
+                offline_model_path,
+                trust_remote_code=True
+            )
+            
+            print("Loading model...")
+            model = AutoModelForCausalLM.from_pretrained(
+                offline_model_path,
+                torch_dtype=torch.float16,
+                device_map="cpu",  # 使用 CPU 测试，避免显存问题
+                trust_remote_code=True
+            )
+            
+            print("Testing generation...")
+            inputs = tokenizer("Hello", return_tensors="pt")
+            outputs = model.generate(**inputs, max_length=20)
+            result = tokenizer.decode(outputs[0])
+            
+            print(f"Generated: {result}")
+            print("✓ Training flow test OK (offline mode)")
+            return True
+        else:
+            # 如果没有离线资源，尝试在线加载小模型
+            print("Loading tokenizer...")
+            tokenizer = AutoTokenizer.from_pretrained("gpt2")
+            
+            print("Loading model...")
+            model = AutoModelForCausalLM.from_pretrained(
+                "gpt2",
+                torch_dtype=torch.float16,
+                device_map="auto"
+            )
+            
+            print("Testing generation...")
+            inputs = tokenizer("Hello", return_tensors="pt").to(model.device)
+            outputs = model.generate(**inputs, max_length=20)
+            result = tokenizer.decode(outputs[0])
+            
+            print(f"Generated: {result}")
+            print("✓ Training flow test OK")
+            return True
         
     except Exception as e:
         print(f"❌ Training flow test failed: {e}")
