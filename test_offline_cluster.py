@@ -1,11 +1,16 @@
+import sys
+import os
+import subprocess
+        import torch
+        import shutil
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        from datasets import load_from_disk
+        import traceback
 """
 无网络集群环境测试脚本
 专门为离线环境设计，不检查网络连接
 """
 
-import sys
-import os
-import subprocess
 
 
 def check_python_version():
@@ -30,7 +35,6 @@ def check_cuda():
     print("=" * 50)
     
     try:
-        import torch
         print(f"PyTorch 版本: {torch.__version__}")
         print(f"CUDA 可用: {torch.cuda.is_available()}")
         
@@ -98,7 +102,7 @@ def check_offline_resources():
     print("=" * 50)
     
     resources = {
-        "模型文件": "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct",
+        "模型文件": "./offline_assets/models/Qwen--Qwen3-8B",
         "数据集": "./offline_assets/datasets/openbmb--UltraFeedback",
         "依赖包": "./offline_assets/wheels",
     }
@@ -138,7 +142,6 @@ def check_disk_space_offline():
     print("=" * 50)
     
     try:
-        import shutil
         total, used, free = shutil.disk_usage(".")
         
         print(f"总空间: {total / 1024**3:.2f} GB")
@@ -165,12 +168,9 @@ def test_offline_training():
     print("=" * 50)
     
     try:
-        import torch
-        from transformers import AutoTokenizer, AutoModelForCausalLM
-        from datasets import load_from_disk
         
         # 检查模型加载
-        model_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+        model_path = "./offline_assets/models/Qwen--Qwen3-8B"
         if not os.path.exists(model_path):
             print(f"❌ 模型路径不存在: {model_path}")
             return False
@@ -204,7 +204,6 @@ def test_offline_training():
         
     except Exception as e:
         print(f"❌ 离线训练流程测试失败: {e}")
-        import traceback
         traceback.print_exc()
         return False
 

@@ -7,7 +7,7 @@ echo "RLHF 离线训练"
 echo "=========================================="
 
 # 检查资源是否存在
-if [ ! -d "offline_assets/models/Qwen--Qwen2.5-7B-Instruct" ]; then
+if [ ! -d "offline_assets/models/Qwen--Qwen3-8B" ]; then
     echo "[错误] 模型文件不存在"
     echo "请确保 offline_assets 目录已正确传输"
     exit 1
@@ -22,7 +22,7 @@ fi
 echo "[检查] 资源文件完整"
 
 # 设置训练参数
-MODEL_PATH="./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+MODEL_PATH="./offline_assets/models/Qwen--Qwen3-8B"
 DATASET_PATH="./offline_assets/datasets/openbmb--UltraFeedback"
 OUTPUT_DIR="./output_offline"
 

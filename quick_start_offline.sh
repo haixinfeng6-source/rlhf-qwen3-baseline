@@ -20,7 +20,7 @@ echo "2. 开始训练..."
 echo "=========================================="
 
 # 设置训练参数
-MODEL_PATH="./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+MODEL_PATH="./offline_assets/models/Qwen--Qwen3-8B"
 DATASET_PATH="./offline_assets/datasets/openbmb--UltraFeedback"
 OUTPUT_DIR="./output_offline_$(date +%Y%m%d_%H%M%S)"
 

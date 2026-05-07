@@ -6,7 +6,7 @@ echo RLHF 离线训练
 echo ==========================================
 
 REM 检查资源是否存在
-if not exist "offline_assets\models\Qwen--Qwen2.5-7B-Instruct" (
+if not exist "offline_assets\models\Qwen--Qwen3-8B" (
     echo [错误] 模型文件不存在
     echo 请确保 offline_assets 目录已正确传输
     pause
@@ -23,7 +23,7 @@ if not exist "offline_assets\datasets\openbmb--UltraFeedback" (
 echo [检查] 资源文件完整
 
 REM 设置训练参数
-set MODEL_PATH=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct
+set MODEL_PATH=./offline_assets/models/Qwen--Qwen3-8B
 set DATASET_PATH=./offline_assets/datasets/openbmb--UltraFeedback
 set OUTPUT_DIR=./output_offline
 

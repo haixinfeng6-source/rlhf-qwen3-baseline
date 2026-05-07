@@ -1,18 +1,15 @@
 # RLHF 训练配置文件
 # 使用标准 PPO (Proximal Policy Optimization) 方法
 # 基于 HuggingFace TRL 官方实现
-
 # 模型配置
 model:
   name: "Qwen/Qwen3-8B"
   trust_remote_code: true
-
 # 数据集配置
 dataset:
   name: "openbmb/UltraFeedback"
   split: "train"
   max_samples: null  # null 表示使用全部数据，可设置为数字限制样本数
-
 # LoRA 配置
 lora:
   enabled: true
@@ -27,12 +24,10 @@ lora:
     - "gate_proj"
     - "up_proj"
     - "down_proj"
-
 # 量化配置
 quantization:
   use_8bit: true
   use_4bit: false
-
 # 训练超参数
 training:
   output_dir: "./output"
@@ -46,22 +41,18 @@ training:
   save_steps: 500
   save_total_limit: 3
   max_length: 512
-  
-  # 显存优化
+    # 显存优化
   gradient_checkpointing: true
   fp16: true
   bf16: false
-
 # PPO 特定参数
 ppo:
   epochs: 4  # PPO 内部迭代次数
   mini_batch_size: 1  # PPO mini-batch 大小
-
 # 分布式训练
 distributed:
   num_gpus: 4
   master_port: 29500
-
 # 其他
 seed: 42
 log_with: "tensorboard"  # tensorboard 或 wandb

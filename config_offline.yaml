@@ -1,15 +1,12 @@
 # 离线训练配置
 # 适用于无网络集群
-
 model:
   name: "./offline_assets/models/Qwen--Qwen3-8B"
   trust_remote_code: true
-
 dataset:
   name: "./offline_assets/datasets/openbmb--UltraFeedback"
   split: "train"
   max_samples: null
-
 lora:
   enabled: true
   r: 16
@@ -23,11 +20,9 @@ lora:
     - "gate_proj"
     - "up_proj"
     - "down_proj"
-
 quantization:
   use_8bit: true
   use_4bit: false
-
 training:
   output_dir: "./output_offline"
   num_train_epochs: 1
@@ -42,13 +37,10 @@ training:
   max_length: 512
   gradient_checkpointing: true
   fp16: true
-
 ppo:
   epochs: 4
   mini_batch_size: 1
-
 distributed:
   num_gpus: 4
-
 seed: 42
 log_with: "tensorboard"

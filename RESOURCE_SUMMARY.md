@@ -4,7 +4,7 @@
 
 ### 1. 模型文件
 - **模型名称**: Qwen/Qwen3-8B
-- **保存路径**: `./offline_assets/models/Qwen--Qwen2.5-7B-Instruct`
+- **保存路径**: `./offline_assets/models/Qwen--Qwen3-8B`
 - **文件大小**: ~15GB
 - **文件列表**:
   - `model-00001-of-00004.safetensors` (3.67GB)
@@ -68,7 +68,7 @@
 
 | 资源类型 | 大小 | 说明 |
 |---------|------|------|
-| 模型文件 | ~15GB | Qwen2.5-7B-Instruct |
+| 模型文件 | ~15GB | Qwen3-8B |
 | 数据集 | ~800MB | UltraFeedback 训练集 |
 | Python 包 | ~5GB | 所有依赖的 wheel 文件 |
 | **总计** | **~21GB** | 完整离线资源包 |
@@ -102,7 +102,7 @@ python test_offline_assets.py
 ```bash
 # 单卡训练
 python train_rlhf.py \
-  --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
+  --model_name=./offline_assets/models/Qwen--Qwen3-8B \
   --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
   --output_dir=./output_offline
 
@@ -123,7 +123,7 @@ bash run_multi_gpu.sh
 ### 问题 1: 模型加载失败
 ```bash
 # 检查文件完整性
-ls -lh offline_assets/models/Qwen--Qwen2.5-7B-Instruct/
+ls -lh offline_assets/models/Qwen--Qwen3-8B/
 
 # 重新下载模型
 python download_assets.py --skip-dataset

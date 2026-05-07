@@ -1,10 +1,14 @@
+import os
+import sys
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        import torch
+        import traceback
+        from datasets import load_from_disk
 """
 测试离线资源是否可用
 验证模型和数据集是否正确下载
 """
 
-import os
-import sys
 
 
 def test_model(model_path):
@@ -19,8 +23,6 @@ def test_model(model_path):
         return False
     
     try:
-        from transformers import AutoTokenizer, AutoModelForCausalLM
-        import torch
         
         print("加载 Tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained(
@@ -54,7 +56,6 @@ def test_model(model_path):
         
     except Exception as e:
         print(f"✗ 模型加载失败: {e}")
-        import traceback
         traceback.print_exc()
         return False
 
@@ -71,7 +72,6 @@ def test_dataset(dataset_path):
         return False
     
     try:
-        from datasets import load_from_disk
         
         print("加载数据集...")
         dataset = load_from_disk(dataset_path)
@@ -105,7 +105,6 @@ def test_dataset(dataset_path):
         
     except Exception as e:
         print(f"✗ 数据集加载失败: {e}")
-        import traceback
         traceback.print_exc()
         return False
 
@@ -146,7 +145,7 @@ def main():
     print("=" * 60 + "\n")
     
     # 默认路径
-    model_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+    model_path = "./offline_assets/models/Qwen--Qwen3-8B"
     dataset_path = "./offline_assets/datasets/openbmb--UltraFeedback"
     
     # 如果提供了命令行参数

@@ -92,7 +92,7 @@ def download_dependencies(save_dir: str = "./wheels"):
             requirements = f.read()
     except UnicodeDecodeError:
         # 如果 UTF-8 失败，尝试其他编码
-        with open("requirements.txt", "r", encoding="gbk") as f:
+        with open("requirements.txt", "r", encoding="utf-8") as f:
             requirements = f.read()
     
     print("执行命令:")
@@ -279,7 +279,7 @@ def main():
     print(f"   scp -r offline_assets username@server:/path/to/project/")
     print("\n3. 在开发机上运行:")
     print("   bash install_offline.sh")
-    print("   python train_rlhf.py --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct")
+    print("   python train_rlhf.py --model_name=./offline_assets/models/Qwen--Qwen3-8B")
     print("=" * 60 + "\n")
 
 

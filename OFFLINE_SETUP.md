@@ -60,7 +60,7 @@ python download_assets.py --skip-model
 from huggingface_hub import snapshot_download
 
 model_name = "Qwen/Qwen3-8B"
-save_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+save_path = "./offline_assets/models/Qwen--Qwen3-8B"
 
 snapshot_download(
     repo_id=model_name,
@@ -120,7 +120,7 @@ pip download -r requirements.txt -d offline_assets/wheels \
 ```
 offline_assets/
 ├── models/
-│   └── Qwen--Qwen2.5-7B-Instruct/
+│   └── Qwen--Qwen3-8B/
 │       ├── config.json
 │       ├── model-00001-of-00004.safetensors
 │       ├── model-00002-of-00004.safetensors
@@ -225,7 +225,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_from_disk
 
 # 测试模型加载
-model_path = "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+model_path = "./offline_assets/models/Qwen--Qwen3-8B"
 print(f"加载模型: {model_path}")
 
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
@@ -259,7 +259,7 @@ python test_offline_assets.py
 # 离线训练配置
 
 model:
-  name: "./offline_assets/models/Qwen--Qwen2.5-7B-Instruct"
+  name: "./offline_assets/models/Qwen--Qwen3-8B"
   trust_remote_code: true
 
 dataset:
@@ -340,7 +340,7 @@ def load_and_preprocess_dataset(args: TrainingArguments, tokenizer):
 ```bash
 # 使用本地路径启动训练
 python train_rlhf.py \
-    --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
+    --model_name=./offline_assets/models/Qwen--Qwen3-8B \
     --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
     --output_dir=./output_offline \
     --use_lora \
@@ -352,7 +352,7 @@ torchrun \
     --nproc_per_node=4 \
     --master_port=29500 \
     train_rlhf.py \
-    --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
+    --model_name=./offline_assets/models/Qwen--Qwen3-8B \
     --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
     --output_dir=./output_offline \
     --use_lora \
@@ -394,7 +394,7 @@ python test_offline_assets.py
 
 # 4. 启动训练
 python train_rlhf.py \
-    --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct \
+    --model_name=./offline_assets/models/Qwen--Qwen3-8B \
     --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback \
     --output_dir=./output_offline
 ```
@@ -418,7 +418,7 @@ pip download -r requirements.txt -d offline_assets/wheels \
 ### 2. 磁盘空间不足
 
 **模型和数据集大小估算:**
-- Qwen2.5-7B-Instruct: ~15GB
+- Qwen3-8B: ~15GB
 - UltraFeedback 数据集: ~2GB
 - Python 依赖包: ~5GB
 - **总计: ~22GB**

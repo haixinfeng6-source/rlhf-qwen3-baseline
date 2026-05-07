@@ -65,7 +65,7 @@ echo    python test_offline_assets.py
 echo.
 echo 2. 启动训练:
 echo    python train_rlhf.py ^
-echo      --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct ^
+echo      --model_name=./offline_assets/models/Qwen--Qwen3-8B ^
 echo      --dataset_name=./offline_assets/datasets/openbmb--UltraFeedback ^
 echo      --output_dir=./output_offline
 echo.

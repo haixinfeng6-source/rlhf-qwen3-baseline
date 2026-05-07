@@ -32,7 +32,7 @@ def main():
     print("RLHF 离线资源一键下载")
     print("="*60)
     print("将下载以下资源:")
-    print("1. 模型: Qwen/Qwen2.5-7B-Instruct (~15GB)")
+    print("1. 模型: Qwen/Qwen3-8B (~15GB)")
     print("2. 数据集: openbmb/UltraFeedback (~800MB)")
     print("3. Python 依赖包 (~5GB)")
     print("="*60)
@@ -81,7 +81,7 @@ def main():
         print("\n下一步:")
         print("1. 将 offline_assets 目录传输到开发机")
         print("2. 在开发机上运行: bash install_offline.sh")
-        print("3. 开始训练: python train_rlhf.py --model_name=./offline_assets/models/Qwen--Qwen2.5-7B-Instruct")
+        print("3. 开始训练: python train_rlhf.py --model_name=./offline_assets/models/Qwen--Qwen3-8B")
     else:
         print("\n✗ 部分资源下载失败，请检查错误信息")
     
