@@ -15,24 +15,87 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, TaskType
-# TRL 导入兼容性处理
-try:
-    # TRL 0.11.0+ 版本
-    from trl.models import AutoModelForCausalLMWithValueHead
-    print("✓ 使用 TRL 0.11.0+ 导入方式: from trl.models import AutoModelForCausalLMWithValueHead")
-except ImportError:
-    try:
-        # TRL 0.10.0 或更早版本
-        from trl import AutoModelForCausalLMWithValueHead
-        print("✓ 使用 TRL 0.10.0 导入方式: from trl import AutoModelForCausalLMWithValueHead")
-    except ImportError as e:
-        print("✗ 无法导入 AutoModelForCausalLMWithValueHead")
-        print(f"错误: {e}")
-        print("请检查 TRL 版本: pip show trl")
-        print("建议安装 TRL >= 0.11.0: pip install trl>=0.11.0")
-        sys.exit(1)
+# TRL 导入兼容性处理 - 支持多个版本
+import importlib.metadata
 
-from trl import PPOConfig, PPOTrainer
+try:
+    trl_version = importlib.metadata.version("trl")
+    print(f"检测到 TRL 版本: {trl_version}")
+except importlib.metadata.PackageNotFoundError:
+    print("✗ TRL 未安装")
+    print("请安装 TRL: pip install trl")
+    sys.exit(1)
+
+# 根据版本尝试不同的导入路径
+AutoModelForCausalLMWithValueHead = None
+import_attempts = []
+
+# TRL 1.x 版本可能的变化
+if trl_version.startswith('1.'):
+    import_attempts = [
+        ("trl", "TRL 1.x 直接导入"),
+        ("trl.models", "TRL 1.x models 模块"),
+        ("trl.models.modeling_value_head", "TRL 1.x modeling_value_head"),
+        ("trl.models.modeling", "TRL 1.x modeling 模块"),
+    ]
+# TRL 0.11.0+ 版本
+elif trl_version >= '0.11.0':
+    import_attempts = [
+        ("trl.models", "TRL 0.11.0+ models 模块"),
+        ("trl", "TRL 0.11.0+ 直接导入"),
+    ]
+# TRL 0.10.0 或更早
+else:
+    import_attempts = [
+        ("trl", "TRL 0.10.0 或更早"),
+        ("trl.models", "TRL 0.10.0 models 模块"),
+    ]
+
+# 尝试所有可能的导入路径
+for import_path, description in import_attempts:
+    try:
+        if '.' in import_path:
+            # 从子模块导入
+            module_name, class_name = import_path.rsplit('.', 1)
+            module = __import__(module_name, fromlist=[class_name])
+            AutoModelForCausalLMWithValueHead = getattr(module, 'AutoModelForCausalLMWithValueHead')
+        else:
+            # 直接导入
+            from importlib import import_module
+            module = import_module(import_path)
+            AutoModelForCausalLMWithValueHead = getattr(module, 'AutoModelForCausalLMWithValueHead')
+        
+        print(f"✓ 使用 {description}: from {import_path} import AutoModelForCausalLMWithValueHead")
+        break
+    except (ImportError, AttributeError) as e:
+        print(f"  ✗ {description} 失败: {e}")
+        continue
+
+if AutoModelForCausalLMWithValueHead is None:
+    print("\n✗ 无法导入 AutoModelForCausalLMWithValueHead")
+    print("已尝试的导入路径:")
+    for import_path, description in import_attempts:
+        print(f"  - {import_path} ({description})")
+    print("\n建议:")
+    print("1. 检查 TRL 安装: pip show trl")
+    print("2. 查看 TRL 源码结构")
+    print("3. 降级到 TRL 0.11.0: pip install trl==0.11.0")
+    sys.exit(1)
+
+# 导入 PPOConfig 和 PPOTrainer
+try:
+    from trl import PPOConfig, PPOTrainer
+    print("✓ PPOConfig, PPOTrainer 导入成功")
+except ImportError as e:
+    print(f"✗ PPOConfig, PPOTrainer 导入失败: {e}")
+    print("尝试从 trl.trainer 导入...")
+    try:
+        from trl.trainer import PPOConfig, PPOTrainer
+        print("✓ 从 trl.trainer 导入 PPOConfig, PPOTrainer 成功")
+    except ImportError as e2:
+        print(f"✗ 从 trl.trainer 导入也失败: {e2}")
+        print("请检查 TRL 安装")
+        sys.exit(1)
 from datasets import load_dataset
 import logging
 
