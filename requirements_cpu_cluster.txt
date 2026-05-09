@@ -4,26 +4,28 @@
 # ============================================
 # 核心框架
 # ============================================
-torch==2.1.0
+# 根据CUDA版本选择（CUDA 12.8使用以下版本）
+# 安装命令: pip install torch==2.7.0+cu128 --index-url https://download.pytorch.org/whl/cu128
+torch==2.7.0+cu128
 
 # ============================================
 # HuggingFace生态
 # ============================================
-transformers==4.36.0
-datasets==2.14.0
-accelerate==0.25.0
-safetensors==0.4.0
-huggingface-hub==0.20.0
+transformers==4.46.0
+datasets==3.1.0
+accelerate==1.0.0
+safetensors==0.5.0
+huggingface-hub==0.26.0
 
 # ============================================
 # RLHF训练
 # ============================================
-trl==0.11.0
+trl==0.11.4
 
 # ============================================
 # 参数高效微调
 # ============================================
-peft==0.7.0
+peft==0.13.2
 
 # ============================================
 # 数据处理
@@ -52,18 +54,25 @@ regex==2023.10.3
 # ============================================
 # 1. 不包含bitsandbytes，避免兼容性问题
 # 2. 不包含triton，避免版本冲突
-# 3. 所有版本都经过验证，确保兼容性
-# 4. 如需GPU支持，确保CUDA版本匹配
-# 5. 在CPU节点安装: pip install -r requirements_cpu_cluster.txt
+# 3. PyTorch版本需根据CUDA版本选择
+# 4. CUDA 12.8 使用 torch==2.7.0+cu128
+# 5. CUDA 12.1 使用 torch==2.5.1+cu121
+# 6. 在CPU节点安装: pip install -r requirements_cpu_cluster.txt
 
 # ============================================
 # 安装命令
 # ============================================
-# CPU节点（联网）:
+# CUDA 12.8（推荐）:
+# pip install torch==2.7.0+cu128 --index-url https://download.pytorch.org/whl/cu128
+# pip install -r requirements_cpu_cluster.txt
+#
+# CUDA 12.1:
+# pip install torch==2.5.1+cu121 --index-url https://download.pytorch.org/whl/cu121
 # pip install -r requirements_cpu_cluster.txt
 #
 # 集群（离线）:
 # pip install --no-index --find-links=offline_assets/wheels/ -r requirements_cpu_cluster.txt
 #
 # 测试安装:
+# python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
 # python -c "from trl import PPOConfig, PPOTrainer; print('✅ TRL OK')"

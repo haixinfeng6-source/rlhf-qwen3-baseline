@@ -65,25 +65,37 @@ echo "✓ 环境已激活"
 
 echo -e "\n步骤3: 安装PyTorch..."
 
-read -p "选择CUDA版本: 1) 11.8  2) 12.1  3) CPU only [默认: 1]: " CUDA_CHOICE
+read -p "选择CUDA版本: 1) 11.8  2) 12.1  3) 12.8  4) CPU only [默认: 3]: " CUDA_CHOICE
 
 case $CUDA_CHOICE in
+    1)
+        CUDA_VERSION="11.8"
+        TORCH_VERSION="2.1.0"
+        TORCH_INDEX="https://download.pytorch.org/whl/cu118"
+        ;;
     2)
         CUDA_VERSION="12.1"
+        TORCH_VERSION="2.5.1"
         TORCH_INDEX="https://download.pytorch.org/whl/cu121"
         ;;
-    3)
+    4)
         CUDA_VERSION="cpu"
+        TORCH_VERSION="2.7.0"
         TORCH_INDEX="https://download.pytorch.org/whl/cpu"
         ;;
-    1 | *)
-        CUDA_VERSION="11.8"
-        TORCH_INDEX="https://download.pytorch.org/whl/cu118"
+    3 | *)
+        CUDA_VERSION="12.8"
+        TORCH_VERSION="2.7.0"
+        TORCH_INDEX="https://download.pytorch.org/whl/cu128"
         ;;
 esac
 
-echo "安装PyTorch (CUDA $CUDA_VERSION)..."
-pip install torch==2.1.0 --index-url "$TORCH_INDEX"
+echo "安装PyTorch $TORCH_VERSION (CUDA $CUDA_VERSION)..."
+if [[ "$CUDA_VERSION" != "cpu" ]]; then
+    pip install torch==${TORCH_VERSION}+cu${CUDA_VERSION//./} --index-url "$TORCH_INDEX"
+else
+    pip install torch==${TORCH_VERSION}+cpu --index-url "$TORCH_INDEX"
+fi
 
 echo "✓ PyTorch安装成功"
 
@@ -94,22 +106,22 @@ echo "✓ PyTorch安装成功"
 echo -e "\n步骤4: 安装核心依赖..."
 
 echo "安装transformers..."
-pip install transformers==4.36.0
+pip install transformers==4.46.0
 
 echo "安装TRL..."
-pip install trl==0.11.0
+pip install trl==0.11.4
 
 echo "安装datasets..."
-pip install datasets==2.14.0
+pip install datasets==3.1.0
 
 echo "安装accelerate..."
-pip install accelerate==0.25.0
+pip install accelerate==1.0.0
 
 echo "安装PEFT..."
-pip install peft==0.7.0
+pip install peft==0.13.2
 
 echo "安装其他依赖..."
-pip install numpy==1.24.3 pandas==2.0.3 tqdm PyYAML requests
+pip install numpy pandas tqdm PyYAML requests
 
 echo "✓ 核心依赖安装完成"
 
